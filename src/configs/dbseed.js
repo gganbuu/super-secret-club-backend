@@ -18,9 +18,11 @@ async function main() {
     console.log("done")
 }
 
+// messages drop table needs to come before users, as messages depends on user and 
+// removing user first would cause an error. 
 const SQL = `
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

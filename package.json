@@ -2,10 +2,10 @@
   "name": "super-secret-club-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --watch index.js",
+    "start": "node --watch server.js",
     "seed": "node src/configs/dbseed.js"
   },
   "keywords": [],
@@ -14,6 +14,7 @@
   "type": "module",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "connect-pg-simple": "^10.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
