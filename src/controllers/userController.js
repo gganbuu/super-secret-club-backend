@@ -1,12 +1,18 @@
 import passport from "passport";
 import { body, matchedData, ExpressValidator } from "express-validator";
 import validate from "../middleware/validator.js";
+import bcrypt from "bcryptjs";
+import * as userdb from '../models/userdb.js'
+
 
 const validateSignUp = [
     body("username").trim().notEmpty().withMessage('Username must not be empty')
                     .isAlphanumeric().withMessage('Username must contain only letters or numbers')
                     .isLength({min: 8, max: 20}).withMessage('Username must be between 8-20 characters')
-                    .custom(async (username) => { if (await userdb.findUserByUsernameWithHash(username)) throw new Error("Username already taken"); }),
+                    .custom(async (username) => {
+                        const check = await userdb.checkUsernameExists(username)
+                        return !check
+                    }).withMessage("Username already taken"),
     body("password").trim().notEmpty().withMessage('Password must not be empty')
                     .isLength({min: 8, max: 20}).withMessage('Password must be between 8-20 characters')
                     .matches(/[A-Z]/).withMessage('Password must have on uppercase letter')
@@ -14,7 +20,7 @@ const validateSignUp = [
                     .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage('Password must have one special char'),
     body("confirmPassword").custom((value, { req }) => {
         return value === req.body.password;
-    })
+    }).withMessage("Confirmed password must match with password")
 ]
 
 

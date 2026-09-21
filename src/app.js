@@ -42,7 +42,6 @@ configurePassport(passport);
 
 app.use(passport.session()); // calls deserialiseUser and sets req.user
 
-app.use('/', userRouter)
 
 export default app 
 
