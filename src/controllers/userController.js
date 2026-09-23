@@ -4,7 +4,7 @@ import validate from "../middleware/validator.js";
 import bcrypt from "bcryptjs";
 import * as userdb from '../models/userdb.js'
 
-
+//sign up
 const validateSignUp = [
     body("username").trim().notEmpty().withMessage('Username must not be empty')
                     .isAlphanumeric().withMessage('Username must contain only letters or numbers')
@@ -23,7 +23,19 @@ const validateSignUp = [
     }).withMessage("Confirmed password must match with password")
 ]
 
+export const signUpPost = [
+    validateSignUp,
+    validate,
+    async (req, res) => {
+        const { username, password } = matchedData(req);
+        const passwordHash = await bcrypt.hash(password, 10)
+        await userdb.addUser({username, passwordHash})
+        res.status(201).json({ message: "Account created" })
+    }
+]
 
+
+// log in 
 // we can't use the same implementation we used in the inventory app as we are now calling the API
 // from a dedicated frontend (built with react), so we cannot simply route our application to /login or /messages
 export function loginPost(req, res, next) {
@@ -38,21 +50,18 @@ export function loginPost(req, res, next) {
     })(req, res, next)
 }
 
-export const signUpPost = [
-    validateSignUp,
-    validate,
-    async (req, res) => {
-        const { username, password } = matchedData(req);
-        const passwordHash = await bcrypt.hash(password, 10)
-        await userdb.addUser({username, passwordHash})
-        res.status(201).json({ message: "Account created" })
-    }
-]
-
 export function logoutPost(req, res) {
     req.logout((err) => {
-    if (err) { 
-      return next(err); 
-    }})
-    res.status(200).json({message: "Logout Successful"})
+        if (err) return next(err); 
+        req.session.destroy((err) => {          // remove the row entirely
+            if (err) return next(err);
+            res.clearCookie('connect.sid');      // tell the browser to drop it
+            res.status(200).json({ message: "Logout Successful" });
+        });
+    })
 }
+
+// me get
+export function meGet(req, res) {
+    res.json({ user: req.user ?? null })
+} 
