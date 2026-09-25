@@ -12,6 +12,7 @@ import userRouter from './routes/userRouter.js';
 // create pg simple session + add configuration to middleware
 const app = express();
 
+
 const PgSession = connectPgSimple(session);
 
 app.use(session({

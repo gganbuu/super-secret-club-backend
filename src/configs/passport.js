@@ -37,7 +37,7 @@ export default function configurePassport(passport) {
 
     passport.deserializeUser(async (id, done) => {
         try {
-            done(null, await userdb.getUserId(id));   // null → treated as logged out, not a 500
+            done(null, await userdb.findUserById(id));   // null → treated as logged out, not a 500
         } catch (err) {
             done(err);
         }

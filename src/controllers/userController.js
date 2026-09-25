@@ -1,5 +1,5 @@
 import passport from "passport";
-import { body, matchedData, ExpressValidator } from "express-validator";
+import { body, matchedData } from "express-validator";
 import validate from "../middleware/validator.js";
 import bcrypt from "bcryptjs";
 import * as userdb from '../models/userdb.js'
@@ -50,7 +50,7 @@ export function loginPost(req, res, next) {
     })(req, res, next)
 }
 
-export function logoutPost(req, res) {
+export function logoutPost(req, res, next) {
     req.logout((err) => {
         if (err) return next(err); 
         req.session.destroy((err) => {          // remove the row entirely
@@ -65,3 +65,15 @@ export function logoutPost(req, res) {
 export function meGet(req, res) {
     res.json({ user: req.user ?? null })
 } 
+
+// secret code
+export async function memberUpdate(req, res) {
+    try { 
+        await userdb.memberUpdate(req.user.id)
+    }
+    catch (error) {
+        res.status(401).json({error: 'Database error'})
+    }
+    res.status(201).json({message: 'Member updated'})
+
+}
