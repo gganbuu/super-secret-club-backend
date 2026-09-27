@@ -8,5 +8,9 @@ messagesRouter.get('/allmessages', messagesController.allMessagesGet)
 
 messagesRouter.post('/newmessage', isAuth, messagesController.messagePost)
 
+messagesRouter.put('/editmessage', isAuth, messagesController.messageEdit)
+
+messagesRouter.delete('/deletemessage', isAuth, messagesController.messageDelete)
+
 
 export default messagesRouter   

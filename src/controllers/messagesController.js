@@ -1,6 +1,7 @@
 import { body, matchedData } from "express-validator";
 import validate from "../middleware/validator.js";
 import * as messagedb from '../models/messagedb.js'
+import isMessageOwner from "../middleware/isMessageOwner.js";
 
 const validateMessage = [
     body("title").trim().notEmpty().withMessage('Title must not be empty')
@@ -23,14 +24,35 @@ export const messagePost = [
     validateMessage,
     validate,
     async (req,res) => {
-        console.log("made it to message db function")
         const {title, content} = matchedData(req)
         await messagedb.messagePost({
             userId: req.user.id,
             title,
             content,
         })
-
         res.status(201).json({message: 'Message created'})
+    }
+]
+
+export const messageEdit = [
+    isMessageOwner,
+    validateMessage,
+    validate,
+    async (req, res) => {
+        const {title, content} = matchedData(req)
+        await messagedb.messageEdit({
+            messageId: req.body.messageId,
+            title,
+            content,
+        })
+        res.status(201).json({message: 'Message edited'})
+    }
+]
+
+export const messageDelete = [
+    isMessageOwner,
+    async (req, res) => {
+        await messagedb.messageDelete({messageId: req.body.messageId})
+        res.status(201).json({message: 'Message deleted'})
     }
 ]
